@@ -67,23 +67,23 @@ function App() {
   const onDrop = ({ sourceSquare, targetSquare }) => {
     if (!joinedRoom) return false;
     
-    // Если сейчас не ваш ход, ничего не делаем
+    // Проверяем, ваш ли сейчас ход
     if (game.turn() !== myColor) {
       setMessage('Сейчас не ваш ход');
       return false;
     }
 
+    // Отправляем только from и to. Сервер сам решит про превращение пешки.
     const move = {
       from: sourceSquare,
       to: targetSquare,
-      promotion: 'q',
     };
 
     socket.emit('makeMove', { roomId, move });
     return true; 
   };
 
-  // В версии 5 все настройки передаются в объекте options
+  // Настройки для react-chessboard версии 5
   const chessboardOptions = {
     position: game.fen(),
     onPieceDrop: onDrop,
