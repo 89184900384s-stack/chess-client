@@ -34,6 +34,10 @@ function App() {
       setGame(new Chess(fen));
     });
 
+    socket.on('gameOver', ({ result, ratings }) => {
+      setMessage(`${result}. Новый рейтинг: Белые ${ratings.white}, Черные ${ratings.black}`);
+    });
+
     socket.on('error', (msg) => {
       setMessage(`Ошибка: ${msg}`);
     });
@@ -42,6 +46,7 @@ function App() {
       socket.off('gameCreated');
       socket.off('gameStarted');
       socket.off('moveMade');
+      socket.off('gameOver');
       socket.off('error');
     };
   }, []);
@@ -64,24 +69,12 @@ function App() {
       return false;
     }
 
-    // Отправляем только from и to
     const move = {
       from: sourceSquare,
       to: targetSquare,
     };
 
-    // Отправляем на сервер
     socket.emit('makeMove', { roomId, move });
-
-    // ЛОКАЛЬНЫЙ ТРЮК: сразу применяем ход у себя, чтобы доска не ждала сервер
-    try {
-      const gameCopy = new Chess(game.fen());
-      gameCopy.move(move);
-      setGame(gameCopy);
-    } catch (e) {
-      // Если ход нелегальный, ничего не делаем
-    }
-    
     return true; 
   };
 
@@ -96,20 +89,10 @@ function App() {
     return (
       <div className="container">
         <h1>Шахматы by vikay</h1>
-        <input 
-          placeholder="Ваше имя" 
-          value={playerName} 
-          onChange={e => setPlayerName(e.target.value)} 
-        />
+        <input placeholder="Ваше имя" value={playerName} onChange={e => setPlayerName(e.target.value)} />
         <button onClick={createGame}>Создать игру</button>
-        
         <p style={{ margin: '10px 0', fontSize: '14px', color: '#8892b0' }}>или</p>
-        
-        <input 
-          placeholder="ID комнаты" 
-          value={inputRoomId} 
-          onChange={e => setInputRoomId(e.target.value)} 
-        />
+        <input placeholder="ID комнаты" value={inputRoomId} onChange={e => setInputRoomId(e.target.value)} />
         <button onClick={joinGame}>Присоединиться</button>
         {message && <p style={{ marginTop: '15px', color: '#e94560' }}>{message}</p>}
       </div>
@@ -126,4 +109,5 @@ function App() {
   );
 }
 
+export default App;
 export default App;
