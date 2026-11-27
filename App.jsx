@@ -83,6 +83,14 @@ function App() {
     return true; 
   };
 
+  // В версии 5 все настройки передаются в объекте options
+  const chessboardOptions = {
+    position: game.fen(),
+    onPieceDrop: onDrop,
+    boardOrientation: myColor === 'b' ? 'black' : 'white',
+    allowDragging: game.turn() === myColor, // Блокируем перетаскивание не в свой ход
+  };
+
   if (!joinedRoom) {
     return (
       <div className="container">
@@ -111,12 +119,7 @@ function App() {
     <div className="container" style={{ maxWidth: '800px', width: '90%' }}>
       <h2 style={{ fontSize: '1.2rem', color: '#8892b0' }}>{message}</h2>
       <div className="board-wrapper">
-        <Chessboard 
-          position={game.fen()} 
-          onPieceDrop={onDrop} 
-          boardOrientation={myColor === 'b' ? 'black' : 'white'}
-          arePiecesDraggable={game.turn() === myColor}
-        />
+        <Chessboard options={chessboardOptions} />
       </div>
     </div>
   );
