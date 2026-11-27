@@ -20,25 +20,18 @@ function App() {
       setMyColor(color);
       setJoinedRoom(true);
       setMessage(`Комната: ${roomId}. Ждем соперника...`);
-      const newGame = new Chess(fen);
-      setGame(newGame);
+      setGame(new Chess(fen));
     });
 
     socket.on('gameStarted', ({ fen, color }) => {
       setJoinedRoom(true);
       setMyColor(color); 
       setMessage(`Игра началась! Твой цвет: ${color === 'w' ? 'Белые' : 'Черные'}`);
-      const newGame = new Chess(fen);
-      setGame(newGame);
+      setGame(new Chess(fen));
     });
 
     socket.on('moveMade', ({ fen }) => {
-      const newGame = new Chess(fen);
-      setGame(newGame);
-    });
-
-    socket.on('gameOver', ({ result, ratings }) => {
-      setMessage(`${result}. Новый рейтинг: Белые ${ratings.white}, Черные ${ratings.black}`);
+      setGame(new Chess(fen));
     });
 
     socket.on('error', (msg) => {
@@ -49,7 +42,6 @@ function App() {
       socket.off('gameCreated');
       socket.off('gameStarted');
       socket.off('moveMade');
-      socket.off('gameOver');
       socket.off('error');
     };
   }, []);
@@ -67,13 +59,13 @@ function App() {
   const onDrop = ({ sourceSquare, targetSquare }) => {
     if (!joinedRoom) return false;
     
-    // Проверяем, ваш ли сейчас ход
+    // Если сейчас не ваш ход, ничего не делаем
     if (game.turn() !== myColor) {
       setMessage('Сейчас не ваш ход');
       return false;
     }
 
-    // Отправляем только from и to. Сервер сам решит про превращение пешки.
+    // УБРАЛИ promotion: 'q'! Теперь отправляем только from и to
     const move = {
       from: sourceSquare,
       to: targetSquare,
@@ -83,12 +75,11 @@ function App() {
     return true; 
   };
 
-  // Настройки для react-chessboard версии 5
   const chessboardOptions = {
     position: game.fen(),
     onPieceDrop: onDrop,
     boardOrientation: myColor === 'b' ? 'black' : 'white',
-    allowDragging: game.turn() === myColor, // Блокируем перетаскивание не в свой ход
+    allowDragging: game.turn() === myColor,
   };
 
   if (!joinedRoom) {
