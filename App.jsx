@@ -26,8 +26,8 @@ function App() {
 
     socket.on('gameStarted', ({ fen, color }) => {
       setJoinedRoom(true);
-      setMyColor(color); // Теперь цвет берется из ответа сервера
-      setMessage(`Игра началась! Твой цвет: ${color}`);
+      setMyColor(color); 
+      setMessage(`Игра началась! Твой цвет: ${color === 'w' ? 'Белые' : 'Черные'}`);
       const newGame = new Chess(fen);
       setGame(newGame);
     });
@@ -60,7 +60,6 @@ function App() {
 
   const joinGame = () => {
     if (playerName && inputRoomId) {
-      // Убрали принудительную установку setMyColor('b')
       socket.emit('joinGame', { roomId: inputRoomId.toUpperCase(), playerName });
     }
   };
@@ -68,7 +67,8 @@ function App() {
   const onDrop = ({ sourceSquare, targetSquare }) => {
     if (!joinedRoom) return false;
     
-    if (myColor && game.turn() !== myColor) {
+    // Если сейчас не ваш ход, ничего не делаем
+    if (game.turn() !== myColor) {
       setMessage('Сейчас не ваш ход');
       return false;
     }
@@ -115,6 +115,7 @@ function App() {
           position={game.fen()} 
           onPieceDrop={onDrop} 
           boardOrientation={myColor === 'b' ? 'black' : 'white'}
+          arePiecesDraggable={game.turn() === myColor} // Блокируем перетаскивание не в свой ход
         />
       </div>
     </div>
