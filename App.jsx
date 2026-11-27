@@ -3,7 +3,7 @@ import { Chessboard } from 'react-chessboard';
 import { io } from 'socket.io-client';
 import { Chess } from 'chess.js';
 
-const socket = io('http://localhost:3001');
+const socket = io('https://vikaychess.enzonic.dev');
 
 function App() {
   const [game, setGame] = useState(new Chess());
