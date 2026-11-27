@@ -59,19 +59,29 @@ function App() {
   const onDrop = ({ sourceSquare, targetSquare }) => {
     if (!joinedRoom) return false;
     
-    // Если сейчас не ваш ход, ничего не делаем
     if (game.turn() !== myColor) {
       setMessage('Сейчас не ваш ход');
       return false;
     }
 
-    // УБРАЛИ promotion: 'q'! Теперь отправляем только from и to
+    // Отправляем только from и to
     const move = {
       from: sourceSquare,
       to: targetSquare,
     };
 
+    // Отправляем на сервер
     socket.emit('makeMove', { roomId, move });
+
+    // ЛОКАЛЬНЫЙ ТРЮК: сразу применяем ход у себя, чтобы доска не ждала сервер
+    try {
+      const gameCopy = new Chess(game.fen());
+      gameCopy.move(move);
+      setGame(gameCopy);
+    } catch (e) {
+      // Если ход нелегальный, ничего не делаем
+    }
+    
     return true; 
   };
 
