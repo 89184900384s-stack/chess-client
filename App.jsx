@@ -63,11 +63,6 @@ function App() {
 
   const onDrop = ({ sourceSquare, targetSquare }) => {
     if (!joinedRoom) return false;
-    
-    if (game.turn() !== myColor) {
-      setMessage('Сейчас не ваш ход');
-      return false;
-    }
 
     const move = {
       from: sourceSquare,
@@ -82,7 +77,6 @@ function App() {
     position: game.fen(),
     onPieceDrop: onDrop,
     boardOrientation: myColor === 'b' ? 'black' : 'white',
-    allowDragging: game.turn() === myColor,
   };
 
   if (!joinedRoom) {
@@ -110,4 +104,3 @@ function App() {
 }
 
 export default App;
-
