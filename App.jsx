@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { Chessboard } from 'react-chessboard';
 import { io } from 'socket.io-client';
 import { Chess } from 'chess.js';
+
 const socket = io('https://vikaychess.enzonic.dev');
+
 function App() {
   const [game, setGame] = useState(new Chess());
   const [roomId, setRoomId] = useState('');
@@ -22,8 +24,9 @@ function App() {
       setGame(newGame);
     });
 
-    socket.on('gameStarted', ({ fen }) => {
+    socket.on('gameStarted', ({ fen, color }) => {
       setJoinedRoom(true);
+      setMyColor(color); // Теперь цвет берется из ответа сервера
       setMessage('Игра началась!');
       const newGame = new Chess(fen);
       setGame(newGame);
@@ -57,8 +60,8 @@ function App() {
 
   const joinGame = () => {
     if (playerName && inputRoomId) {
+      // Убрали принудительную установку setMyColor('b')
       socket.emit('joinGame', { roomId: inputRoomId.toUpperCase(), playerName });
-      setMyColor('b');
     }
   };
 
