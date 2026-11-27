@@ -115,7 +115,7 @@ function App() {
           position={game.fen()} 
           onPieceDrop={onDrop} 
           boardOrientation={myColor === 'b' ? 'black' : 'white'}
-          arePiecesDraggable={game.turn() === myColor} // Блокируем перетаскивание не в свой ход
+          arePiecesDraggable={game.turn() === myColor}
         />
       </div>
     </div>
