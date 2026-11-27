@@ -27,7 +27,7 @@ function App() {
     socket.on('gameStarted', ({ fen, color }) => {
       setJoinedRoom(true);
       setMyColor(color); // Теперь цвет берется из ответа сервера
-      setMessage('Игра началась!');
+      setMessage(`Игра началась! Твой цвет: ${color}`);
       const newGame = new Chess(fen);
       setGame(newGame);
     });
